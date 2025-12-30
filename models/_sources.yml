@@ -1,0 +1,25 @@
+
+version: 2
+
+sources:
+  - name: bronze
+    database: DW_SBUX
+    schema: SC_BRONZE
+    tables:
+      # POS & Orders
+      - name: sbx_pos_sales_raw
+      - name: sbx_pos_order_items_raw
+      - name: sbx_pos_payment_raw
+      # Delivery
+      - name: sbx_delivery_orders_raw
+      - name: sbx_delivery_items_raw
+      # Loyalty
+      - name: sbx_rewards_activity_raw
+      # Menu & Recipe (BOM)
+      - name: sbx_menu_item_raw
+      - name: sbx_recipe_bom_raw
+      # Inventory
+      - name: sbx_inventory_stock_raw
+      - name: sbx_inventory_usage_raw
+      # Master Store
+      - name: sbx_store_master_raw
