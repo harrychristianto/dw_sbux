@@ -1,8 +1,8 @@
-{{ config(schema='SC_SILVER', materialized='table') }}
+{{ config(materialized='table') }}
 
 select
-  cast(store_id as string)  as store_id,
-  cast(sku_id as string)    as sku_id,
+  cast(store_id as varchar)  as store_id,
+  cast(sku_id as varchar)    as sku_id,
   date(stock_date)          as stock_date,
   cast(opening_qty as numeric)    as opening_qty,
   cast(receipt_qty as numeric)    as receipt_qty,

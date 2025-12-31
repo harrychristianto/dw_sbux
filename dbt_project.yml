@@ -38,7 +38,6 @@ clean-targets:         # directories to be removed by `dbt clean`
 models:
   sbux_elt:
     +database: DW_SBUX
-    +snowflake_warehouse: COMPUTE_WH
     
     # Bronze models
     bronze:
