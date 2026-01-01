@@ -1,4 +1,3 @@
-
 {{ config(schema='SC_GOLD', materialized='table') }}
 
 with tx as (
@@ -6,8 +5,8 @@ with tx as (
     store_id,
     channel,
     order_type,
-    date(order_ts_local) as order_date,
-    extract(hour from order_ts_local) as order_hour,
+    cast(order_ts_local as date) as order_date,
+    date_part(hour, order_ts_local) as order_hour,
     net_sales_amount,
     gross_amount
   from {{ ref('silver_sbx_sales_transaction') }}
@@ -31,7 +30,7 @@ agg as (
     count(*)                              as order_count,
     sum(net_sales_amount)                 as net_sales,
     sum(gross_amount)                     as gross_sales,
-    safe_divide(sum(net_sales_amount), nullif(count(*),0)) as aov
+    sum(net_sales_amount) / nullif(count(*),0) as aov
   from daypart
   group by 1,2,3,4,5
 )

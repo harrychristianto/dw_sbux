@@ -6,33 +6,33 @@
 
 with items as (
   select
-    cast(order_item_id as string)   as order_item_id,
-    cast(order_id as string)        as transaction_id,
-    cast(store_id as string)        as store_id,
-    cast(item_id as string)         as menu_item_id,
-    upper(trim(item_name))          as item_name_norm,
+    cast(order_item_id as varchar)   as order_item_id,
+    cast(order_id as varchar)        as transaction_id,
+    cast(store_id as varchar)        as store_id,
+    cast(item_id as varchar)         as menu_item_id,
+    upper(trim(item_name))           as item_name_norm,
     quantity, unit_price, discount_amount, tax_amount,
     modifiers_json,
     ingestion_ts
   from {{ source('bronze','sbx_pos_order_items_raw') }}
   {% if is_incremental() %}
-    where ingestion_ts > (select coalesce(max(ingestion_ts), '1970-01-01') from {{ this }})
+    where ingestion_ts > (select coalesce(max(ingestion_ts), to_timestamp('1970-01-01')) from {{ this }})
   {% endif %}
 ),
 menu as (
   select
-    cast(menu_item_id as string)         as menu_item_id,
-    upper(trim(menu_item_name))          as menu_item_name_norm,
+    cast(menu_item_id as varchar)         as menu_item_id,
+    upper(trim(menu_item_name))           as menu_item_name_norm,
     upper(coalesce(category,'UNCATEGORIZED')) as category
   from {{ source('bronze','sbx_menu_item_raw') }}
 ),
 parsed as (
   select
     i.*,
-    {{ json_extract('modifiers_json', '$.size') }}        as size,
-    {{ json_extract('modifiers_json', '$.milk') }}        as milk_type,
-    {{ json_extract('modifiers_json', '$.syrup') }}       as syrup,
-    cast({{ json_extract('modifiers_json', '$.extra_shot') }} as int) as extra_shot
+    parse_json(modifiers_json):size        as size,
+    parse_json(modifiers_json):milk        as milk_type,
+    parse_json(modifiers_json):syrup       as syrup,
+    cast(parse_json(modifiers_json):extra_shot as integer) as extra_shot
   from items i
 )
 select

@@ -1,8 +1,7 @@
-
 {{ config(schema='SC_GOLD', materialized='table') }}
 
 select
-  cast(menu_item_id as string)                as menu_item_id,
+  cast(menu_item_id as varchar)               as menu_item_id,
   upper(trim(menu_item_name))                 as menu_item_name,
   upper(coalesce(category,'BEVERAGE'))        as category,
   coalesce(is_active, true)                   as is_active
