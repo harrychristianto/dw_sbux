@@ -1,4 +1,3 @@
-
 {% macro json_extract(json_col, path) %}
   {% if target.type == 'bigquery' %}
     json_value({{ json_col }}, '{{ path }}')
