@@ -16,7 +16,7 @@ with completed as (
     on i.transaction_id = t.transaction_id
    and t.normalized_status = 'COMPLETED'
   {% if is_incremental() %}
-    where t.ingestion_ts > (select coalesce(max(updated_at), '1970-01-01') from {{ this }})
+    where t.ingestion_ts > (select coalesce(max(updated_at), to_timestamp('1970-01-01')) from {{ this }})
   {% endif %}
 )
 select
@@ -29,4 +29,4 @@ select
   size, milk_type, syrup, extra_shot,
   quantity, unit_price, discount_amount, tax_amount, line_amount,
   current_timestamp() as updated_at
-from completed;
+from completed

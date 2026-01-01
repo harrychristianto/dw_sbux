@@ -38,4 +38,4 @@ select
   {{ surrogate_key(['store_id','channel','order_type','order_date','daypart']) }} as sales_daily_key,
   store_id, channel, order_type, order_date, daypart,
   order_count, net_sales, gross_sales, aov
-from agg;
+from agg
