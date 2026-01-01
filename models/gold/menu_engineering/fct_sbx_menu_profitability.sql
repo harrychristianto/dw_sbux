@@ -1,10 +1,9 @@
-
 {{ config(schema='SC_GOLD', materialized='table') }}
 
 with item_sales as (
   select
     t.store_id,
-    date(t.order_ts_local) as order_date,
+    cast(t.order_ts_local as date) as order_date,
     i.menu_item_id,
     i.item_name_norm,
     sum(i.quantity)        as qty_sold,
@@ -36,16 +35,16 @@ cost_per_serving as (
   group by b.menu_item_id
 )
 select
-  {{ surrogate_key(['is.store_id','is.menu_item_id','is.order_date']) }} as menu_profit_key,
-  is.store_id,
-  is.order_date,
-  is.menu_item_id,
-  is.item_name_norm,
-  is.qty_sold,
-  is.revenue,
+  {{ surrogate_key(['i_s.store_id','i_s.menu_item_id','i_s.order_date']) }} as menu_profit_key,
+  i_s.store_id,
+  i_s.order_date,
+  i_s.menu_item_id,
+  i_s.item_name_norm,
+  i_s.qty_sold,
+  i_s.revenue,
   coalesce(c.cost_per_serving, 0) as cost_per_serving,
-  (is.qty_sold * coalesce(c.cost_per_serving, 0)) as total_cost,
-  (is.revenue - (is.qty_sold * coalesce(c.cost_per_serving, 0))) as contribution_margin
-from item_sales is
+  (i_s.qty_sold * coalesce(c.cost_per_serving, 0)) as total_cost,
+  (i_s.revenue - (i_s.qty_sold * coalesce(c.cost_per_serving, 0))) as contribution_margin
+from item_sales i_s
 left join cost_per_serving c
-  on c.menu_item_id = is.menu_item_id;
+  on c.menu_item_id = i_s.menu_item_id

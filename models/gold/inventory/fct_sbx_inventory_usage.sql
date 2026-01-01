@@ -1,10 +1,9 @@
-
 {{ config(schema='SC_GOLD', materialized='table') }}
 
 with portions as (
   select
     i.store_id,
-    date(t.order_ts_local) as order_date,
+    cast(t.order_ts_local as date) as order_date,
     i.menu_item_id,
     sum(i.quantity) as portions_sold
   from {{ ref('silver_sbx_sales_item') }} i
@@ -27,10 +26,10 @@ theoretical as (
 ),
 actual as (
   select
-    cast(store_id as string) as store_id,
-    date(usage_date)          as order_date,
-    cast(sku_id as string)    as sku_id,
-    sum(cast(usage_qty as numeric)) as actual_qty
+    cast(store_id as varchar) as store_id,
+    cast(usage_date as date)  as order_date,
+    cast(sku_id as varchar)   as sku_id,
+    sum(cast(usage_qty as number)) as actual_qty
   from {{ source('bronze','sbx_inventory_usage_raw') }}
   group by 1,2,3
 )
@@ -44,4 +43,4 @@ from theoretical t
 left join actual a
   on a.store_id = t.store_id
  and a.sku_id   = t.sku_id
- and a.order_date = t.order_date;
+ and a.order_date = t.order_date
