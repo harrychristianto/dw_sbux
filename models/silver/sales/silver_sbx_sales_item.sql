@@ -49,4 +49,4 @@ select
   p.ingestion_ts
 from parsed p
 left join menu m
-  on p.menu_item_id = m.menu_item_id;
+  on p.menu_item_id = m.menu_item_id
